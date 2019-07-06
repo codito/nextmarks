@@ -324,7 +324,7 @@ public class MainActivity extends AppCompatActivity {
         loginData.user = sharedPreferences.getString(getString(R.string.login_user), "");
         loginData.password = sharedPreferences.getString(getString(R.string.login_pwd), "");
         if(loginData.url.isEmpty()) {
-            Intent intent = new Intent(this, LoginAcitivty.class);
+            Intent intent = new Intent(this, LoginActivity.class);
             startActivity(intent);
         } else {
             reloadData();
@@ -350,7 +350,7 @@ public class MainActivity extends AppCompatActivity {
         //noinspection SimplifiableIfStatement
         switch(id) {
             case R.id.action_change_login:
-                Intent intent = new Intent(this, LoginAcitivty.class);
+                Intent intent = new Intent(this, LoginActivity.class);
                 startActivity(intent);
                 return true;
             case R.id.action_reload_icons:

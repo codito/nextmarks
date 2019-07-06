@@ -22,7 +22,7 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".LoginAcitivty"
+            android:name=".LoginActivity"
             android:theme="@style/LoginStyle">
         </activity>
         <activity android:name=".AddBookmarkActivity"

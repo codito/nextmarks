@@ -1,17 +1,19 @@
 package org.schabi.ocbookmarks.REST;
 
+import org.apache.commons.codec.binary.Base64;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import javax.net.ssl.X509TrustManager;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLEncoder;
+import java.security.cert.CertificateException;
+import java.security.cert.X509Certificate;
 import java.util.Date;
-
-import org.apache.commons.codec.binary.Base64;
 
 /**
  * Created by the-scrabi on 14.05.17.
@@ -31,7 +33,7 @@ public class OCBookmarksRestConnector {
         pwd = password;
     }
 
-    public JSONObject send(String methode, String relativeUrl) throws RequestException {
+    public JSONObject send(String method, String relativeUrl) throws RequestException {
         BufferedReader in = null;
         StringBuilder response = new StringBuilder();
         HttpURLConnection connection = null;
@@ -40,7 +42,7 @@ public class OCBookmarksRestConnector {
             url = new URL(apiRootUrl + relativeUrl);
 
             connection = (HttpURLConnection) url.openConnection();
-            connection.setRequestMethod(methode);
+            connection.setRequestMethod(method);
             connection.setConnectTimeout(TIME_OUT);
             connection.addRequestProperty("Content-Type", "application/json");
             connection.addRequestProperty("Authorization", "Basic " + new String(Base64.encodeBase64((usr + ":" + pwd).getBytes())));
@@ -71,7 +73,7 @@ public class OCBookmarksRestConnector {
             }
         }
 
-        return parseJson(methode, url.toString(), response.toString());
+        return parseJson(method, url.toString(), response.toString());
     }
 
     private JSONObject parseJson(String methode, String url, String response) throws RequestException {
@@ -275,4 +277,26 @@ public class OCBookmarksRestConnector {
         send("POST", "/tag?old_name=" + URLEncoder.encode(oldName)
                 + "&new_name=" + URLEncoder.encode(newName));
     }
+
+    private static class MyTrustManager implements X509TrustManager
+    {
+        @Override
+        public void checkClientTrusted(X509Certificate[] chain, String authType)
+                throws CertificateException
+        {
+        }
+
+        @Override
+        public void checkServerTrusted(X509Certificate[] chain, String authType)
+                throws CertificateException
+        {
+        }
+
+        @Override
+        public X509Certificate[] getAcceptedIssuers()
+        {
+            return null;
+        }
+    }
 }
+

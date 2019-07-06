@@ -18,7 +18,7 @@ import org.schabi.ocbookmarks.REST.RequestException;
 
 import java.io.File;
 
-public class LoginAcitivty extends AppCompatActivity {
+public class LoginActivity extends AppCompatActivity {
 
     // reply info
     private static final int OK = 0;
@@ -43,7 +43,7 @@ public class LoginAcitivty extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_login_acitivty);
+        setContentView(R.layout.activity_login_activity);
 
         getSupportActionBar().setElevation(0);
         getSupportActionBar().setTitle(getString(R.string.oc_bookmark_login));
