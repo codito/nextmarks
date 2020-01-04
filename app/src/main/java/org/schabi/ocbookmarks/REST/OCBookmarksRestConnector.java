@@ -1,14 +1,21 @@
 package org.schabi.ocbookmarks.REST;
 
+import android.content.Context;
+import android.util.Log;
+import com.owncloud.android.lib.common.network.AdvancedSslSocketFactory;
+import com.owncloud.android.lib.common.network.NetworkUtils;
+import okhttp3.Headers;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.Response;
 import org.apache.commons.codec.binary.Base64;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.schabi.ocbookmarks.LoginData;
 
-import javax.net.ssl.X509TrustManager;
-import java.io.BufferedReader;
-import java.io.InputStreamReader;
-import java.net.HttpURLConnection;
+import javax.net.ssl.*;
+import java.io.IOException;
 import java.net.URL;
 import java.net.URLEncoder;
 import java.security.cert.CertificateException;
@@ -21,6 +28,8 @@ import java.util.Date;
 
 
 public class OCBookmarksRestConnector {
+    private static final String TAG = OCBookmarksRestConnector.class.getCanonicalName();
+    private Context context;
     private String apiRootUrl;
     private String usr;
     private String pwd;
@@ -33,53 +42,66 @@ public class OCBookmarksRestConnector {
         pwd = password;
     }
 
+    public OCBookmarksRestConnector(LoginData loginData, Context applicationContext) {
+        this(loginData.url, loginData.user, loginData.password);
+
+        this.context = applicationContext;
+    }
+
     public JSONObject send(String method, String relativeUrl) throws RequestException {
-        BufferedReader in = null;
-        StringBuilder response = new StringBuilder();
-        HttpURLConnection connection = null;
+        OkHttpClient client = null;
+        Request request = null;
         URL url = null;
         try {
             url = new URL(apiRootUrl + relativeUrl);
 
-            connection = (HttpURLConnection) url.openConnection();
-            connection.setRequestMethod(method);
-            connection.setConnectTimeout(TIME_OUT);
-            connection.addRequestProperty("Content-Type", "application/json");
-            connection.addRequestProperty("Authorization", "Basic " + new String(Base64.encodeBase64((usr + ":" + pwd).getBytes())));
+            HostnameVerifier hostnameVerifier = new HostnameVerifier() {
+                @Override
+                public boolean verify(String hostname, SSLSession session) {
+                    Log.d(TAG, "Trust Host :" + hostname);
+                    return true;
+                }
+            };
+
+            AdvancedSslSocketFactory sslFactory = NetworkUtils.getAdvancedSslSocketFactory(context);
+            client = new OkHttpClient.Builder()
+                    .sslSocketFactory(sslFactory.getSslContext().getSocketFactory())
+//                    .sslSocketFactory(sslContext.getSocketFactory())
+                    .hostnameVerifier(hostnameVerifier)
+//                    .hostnameVerifier(sslFactory.getHostNameVerifier())
+                    .build();
+
+            request = new Request.Builder()
+                    .url(url)
+                    .method(method, null)
+                    .addHeader("Content-Type", "application/json")
+                    .addHeader("Authorization", "Basic " + new String(Base64.encodeBase64((usr + ":" + pwd).getBytes())))
+                    .build();
         } catch (Exception e) {
             throw new RequestException("Could not setup request", e);
         }
-        try {
-            in = new BufferedReader(
-                    new InputStreamReader(connection.getInputStream()));
 
-            String inputLine;
-            while((inputLine = in.readLine()) != null) {
-                response.append(inputLine);
-            }
+        String responseBody = null;
+        try (Response response = client.newCall(request).execute()) {
+            if (!response.isSuccessful()) throw new IOException("Unexpected code " + response);
+
+            Headers responseHeaders = response.headers();
+
+            responseBody = response.body().string();
         } catch (Exception e) {
             if(e.getMessage().contains("500")) {
                 throw new PermissionException(e);
             }
             throw new RequestException(e);
-        } finally {
-            try {
-                if (in != null) {
-                    in.close();
-                }
-                connection.disconnect();
-            } catch (Exception e) {
-                throw new RequestException("Could not close connection", e);
-            }
         }
 
-        return parseJson(method, url.toString(), response.toString());
+        return parseJson(method, url.toString(), responseBody);
     }
 
-    private JSONObject parseJson(String methode, String url, String response) throws RequestException {
+    private JSONObject parseJson(String method, String url, String response) throws RequestException {
 
         JSONObject data = null;
-        if(methode.equals("GET") && url.endsWith("/tag")) {
+        if(method.equals("GET") && url.endsWith("/tag")) {
             // we have to handle GET /tag different:
             // https://github.com/nextcloud/bookmarks#list-all-tags
             JSONArray array = null;
@@ -91,7 +113,7 @@ public class OCBookmarksRestConnector {
                 throw new RequestException("Parsing error, maybe owncloud does not support bookmark api", je);
             }
             return data;
-        } else if(methode == "PUT") {
+        } else if(method == "PUT") {
             try {
                 data = new JSONObject(response);
                 return data.getJSONObject("item");

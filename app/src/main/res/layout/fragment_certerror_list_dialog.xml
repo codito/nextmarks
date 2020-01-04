@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              xmlns:tools="http://schemas.android.com/tools"
+              android:id="@+id/edit_name"
+              android:layout_width="match_parent"
+              android:layout_height="match_parent"
+              android:layout_gravity="center"
+              android:orientation="vertical"
+              tools:context="org.schabi.ocbookmarks.CertErrorDialogFragment">
+
+    <TextView
+            android:id="@+id/cert_dialog_title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            tools:text="@string/login_cert_dialog_title"
+            android:textAppearance="@android:style/TextAppearance.Material.DialogWindowTitle"/>
+    <TextView
+            android:id="@+id/cert_dialog_message"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textAppearance="@android:style/TextAppearance.Material.Small"/>
+
+
+    <LinearLayout
+            android:id="@+id/LinearLayout02"
+            android:layout_height="wrap_content"
+            android:layout_width="wrap_content"
+            android:layout_gravity="end"
+            android:orientation="horizontal"
+            android:style="?android:attr/buttonBarStyle">
+        <Button
+                android:id="@+id/Button02"
+                android:layout_width="120dp"
+                android:layout_height="wrap_content"
+                android:layout_gravity="end"
+                android:paddingLeft="16dp"
+                android:paddingRight="16dp"
+                android:style="?android:attr/buttonBarButtonStyle"
+                android:text="@string/login_cert_action_stay_safe"
+                android:stateListAnimator="?android:attr/buttonBarButtonStyle">
+        </Button>
+        <Button
+                android:id="@+id/Button03"
+                android:layout_width="120dp"
+                android:layout_height="wrap_content"
+                android:layout_gravity="end"
+                android:paddingLeft="16dp"
+                android:paddingRight="16dp"
+                android:style="?android:attr/buttonBarButtonStyle"
+                android:text="@string/login_cert_action_approve">
+        </Button>
+    </LinearLayout>
+</LinearLayout>

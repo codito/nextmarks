@@ -315,10 +315,9 @@ public class MainActivity extends AppCompatActivity {
     @Override
     public void onResume() {
         super.onResume();
-        //todo: only reload if no data is stored so fare
-        // start login activity when nececary:
-        sharedPreferences =
-                getSharedPreferences(getPackageName(), Context.MODE_PRIVATE);
+        // TODO only reload if no data is stored so far
+        // start login activity when necessary:
+        sharedPreferences = getSharedPreferences(getPackageName(), Context.MODE_PRIVATE);
         loginData = new LoginData();
         loginData.url = sharedPreferences.getString(getString(R.string.login_url), "");
         loginData.user = sharedPreferences.getString(getString(R.string.login_user), "");
@@ -331,7 +330,6 @@ public class MainActivity extends AppCompatActivity {
             loadFromFile();
         }
     }
-
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -486,4 +484,10 @@ public class MainActivity extends AppCompatActivity {
             if(BuildConfig.DEBUG) e.printStackTrace();
         }
     }
+
+    // TODO port to androidx
+    //  - https://github.com/googlesamples/android-sunflower
+    //  - https://developer.android.com/jetpack/docs/guide
+    // TODO support for orientations
+    // TODO show cert error and get permission to bypass security check
 }

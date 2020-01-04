@@ -41,4 +41,8 @@
     <string name="login_host_not_found">Connection Failed. Check if\n &#x2022; You entered the right URL.</string>
     <string name="login_failed">Login Failed. Check if\n &#x2022; The URL is correct.\n &#x2022; username/password is correct.\n &#x2022; Bookmark App v0.10.1 or\n higher is installed on your Nextcloud</string>
     <string name="login_timeout">Connection Failed. Check if\n &#x2022; you have internet access.\n &#x2022; the URL is correct.\n &#x2022; you entered the right port number.</string>
+    <string name="login_cert_dialog_title">Certificate error</string>
+    <string name="login_cert_dialog_message">Do you trust the host and certificate?</string>
+    <string name="login_cert_action_stay_safe">Stay Safe</string>
+    <string name="login_cert_action_approve">Approve</string>
 </resources>
